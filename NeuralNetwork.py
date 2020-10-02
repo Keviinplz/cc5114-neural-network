@@ -79,11 +79,14 @@ class NeuralNetwork():
             hi = self.l_a[i+1](ui)                              
             lista.append(hi)
 
-        # Obligo a la red a tener más de 1 capa 
+        # Obligo a la red a tener más de 1 capa (fixear)
         u_f = np.dot(lista[len(self.w_l) - 2], self.w_l[len(self.w_l) - 1]) + self.b_l[len(self.w_l) - 1]
         y_predicted = softmax(u_f)
         return y_predicted
 
+    def back_propagation(self):
+        # Calcular todas las derivadas y guardas las matrices
 
-
+    def update(self):
+        # Fixear todos los parámetros por el learning rate y los resultados de las derivadas calculadas en self.back_propagation
 
