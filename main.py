@@ -1,41 +1,61 @@
-from random import randint
+from random import randint, shuffle
 
 import numpy as np
 
 from utils.dataset import Dataset
 from utils.neuralnetwork import NeuralNetwork
+from utils.otherNeuralNetwork import OtherNeuralNetwork
 
-# La red está memorizando, no está aprendiendo :/ (overfitting)
+# Create a Training and Test data by factor
+# inputData: list Data input
+# outputData: list Data output
+# factor: float between 0 and 1, to separate data
+def createTestAndTrainingDataset(inputData: list, outputData: list, factor: float) -> list:
+    training_len = int(len(inputData)*factor)
+    test_len = -int(len(inputData)*(1-factor))
+    
+    X_training = inputData[:training_len]
+    Y_training = outputData[:training_len]
 
-ds = Dataset('dataset/data.csv')
-dataX, dataY = ds.getData()
-test = 1000
-X_training = dataX[:int(len(dataX)*0.9)]
-Y_training = dataY[:int(len(dataX)*0.9)]
+    X_test = inputData[test_len:]
+    Y_test = outputData[test_len:]
 
-X_test = dataX[-int(len(dataX)*0.1):]
-Y_test = dataY[-int(len(dataX)*0.1):]
+    return X_training, Y_training, X_test, Y_test
 
-features = len(X_training[0])
-classes = len(Y_training[0])
+def train(X_training, Y_training, X_test, Y_test, n_h, epoch, learning_rate):
+    n_x = len(X_training[0])
+    n_y = len(Y_training[0])
 
-nn = NeuralNetwork([features, 50, classes],activations=['relu', 'sigmoid'])
-nn.train(X_training.T, Y_training.T, epochs=1000, batch_size=64, lr = .05)
+    nn = OtherNeuralNetwork(X_training.T, Y_training.T, n_x, n_h, n_y, epoch, learning_rate)
 
-correct = 0
-incorrect = 0
-for i in range(test):
-    randomValue = randint(0, len(X_test) - 1)
+    trained_params = nn.model()
 
-    x = np.array([X_test[randomValue]]).T
-    y = np.argmax(Y_test[randomValue])
-    z_s, a_s = nn.feedforward(x)
+    accurateModel(X_test, Y_test, nn, trained_params)
+ 
+def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list) -> None:
+    correct = 0
+    for i in range(len(X_test)):
+        randomValue = randint(0, (len(X_test) - 1))
 
-    y_pred = np.argmax(a_s[-1])
-    if y_pred == y:
-        correct +=1
+        x = np.array([X_test[randomValue]]).T
+        y = Y_test[randomValue][0]
 
-acc = (correct/test) * 100
+        y_pred = nn.predict(x, trained_params)
+        if y_pred == y:
+            correct += 1
+    acc = (correct/len(X_test)) * 100
 
-print(f"Accurate: {acc}%")
+    print(f'Accurate: {acc}%')
 
+if __name__ == '__main__':
+
+    FILEPATH = 'dataset/stars01.csv'
+    REGEX = r'^(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)([\w/.: \-\+\(\)]+,)(\d+\.\d+,|-\d+\.\d+,)([01])$'
+    GROUP = [1, 2, 3, 4, 6, 7]
+
+    ds = Dataset(FILEPATH, REGEX, GROUP)
+
+    X, Y = ds.getData()
+
+    X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
+    train(X_train, Y_train, X_test, Y_test, 50, 5000, 0.01)

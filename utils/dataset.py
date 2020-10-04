@@ -11,29 +11,12 @@ class Dataset():
   Define a Dataset structure
   """
 
-  def __init__(self, filepath):
+  def __init__(self, filepath, regex, group):
     self.filepath = filepath
-    self.regex = r'^(\w[#b]|\w);(.+);".+";((\w.){5}\w);.+$'
-    self.diccChords = {}
+    self.regex = regex
+    self.group = group
 
-  @staticmethod
-  def encodeX(n):
-    return -1 if n == 'x' else int(n)
-
-  def getChords(self) -> dict:
-    return self.diccChords
-
-  def updateDiccChords(self, char: str) -> list:
-    if char not in self.diccChords.keys():
-      self.diccChords[char] = len(self.diccChords.keys())
-
-  def oneHotEncoding(self, char: str) -> list:
-    output = np.zeros(len(self.diccChords.keys()))
-    position = self.diccChords[char]
-    output[position] = 1
-    return output
-
-  def extractInfoFromFile(self, filepath: str, regex: str) -> list:
+  def extractInfoFromFile(self, filepath: str, regex: str, group: list) -> list:
     """
     Extract info from File use Regular Expresion
     """
@@ -42,20 +25,21 @@ class Dataset():
     lines = open(filepath).read().splitlines()
     for i in range(1, len(lines)):
       match = re.search(regex, lines[i].rstrip('\n'), re.MULTILINE) # Search line by line
-      inputData = list(map(self.encodeX, match.group(3).split(','))) # transform input to list, with x = -1 (encode)
-      self.updateDiccChords(match.group(1))
+      inputData = []
+      for i in range(len(group) - 1):
+        x = float(match.group(group[i])[:-1])
+        inputData.append(x)
       inputsList.append(inputData)
-      outputsList.append(match.group(1))
-    
-    outputsList = list(map(self.oneHotEncoding, outputsList))
+      y = float(match.group(len(group) + 1))
+      outputsList.append(np.array([y]))
 
     data = []
     for x, y in zip(inputsList, outputsList):
-      data.append([np.array(x),y])
+      data.append([np.array(x), np.array(y)])
     return data # The data has the form: [input, output]
 
   def getData(self):
-    data = self.extractInfoFromFile(self.filepath, self.regex)
+    data = self.extractInfoFromFile(self.filepath, self.regex, self.group)
     random.shuffle(data)
     X = []
     Y = []

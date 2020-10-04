@@ -34,7 +34,7 @@ class NeuralNetwork(object):
                 print(f"u{i}: {u.shape}")
             a = activation_function(z_s[-1])
             a_s.append(a) # activations evaluated in z
-        return (z_s, a_s)
+        return (z_s, a_s) # need cache
     
     def backpropagation(self,y, z_s, a_s):
         dw = []  # dC/dW
