@@ -77,7 +77,8 @@ def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_
         ax.set_yticks(np.arange(len(labels)))
         ax.set_xticklabels(labels)
         ax.set_yticklabels(labels)
-       
+        ax.set_xlabel('Predicted Label')
+        ax.set_ylabel('True Label')
         for i in range(len(labels)):
             for j in range(len(labels)):
                 c = M[j,i]
@@ -89,8 +90,8 @@ def precision(M, labels):
     '''
     This function takes the confusion matrix and prints the precision values
     '''
-    
-    precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
+    row_sum = [sum(row[i] for i in range(len(M[0]))) for row in M]
+    precision = [M[i][i]/row_sum[i] for i in range(len(row_sum))]
     
     for i in range(len(M[0])):
         print("Precision of " + labels[i] + " is " + str(precision[i]*100)+"%") 
@@ -99,16 +100,14 @@ def recall(M, labels):
     '''
     This function takes the confusion matrix and prints the recall values
     '''
-    row_sum = [sum(row[i] for i in range(len(M[0]))) for row in M]
-    recall = [M[i][i]/row_sum[i] for i in range(len(row_sum))]
-    # precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
+    precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
     
     for i in range(len(M[0])):
-        print("Recall of " + labels[i] + " is " + str(recall[i]*100)+"%") 
+        print("Recall of " + labels[i] + " is " + str(precision[i]*100)+"%") 
 
 if __name__ == '__main__':
 
-    FILEPATH = 'dataset/stars02.csv'
+    FILEPATH = 'dataset/stars01.csv'
     REGEX = r'^(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)([\w/.: \-\+\(\)]+,)(\d+\.\d+,|-\d+\.\d+,)([01])$'
     GROUP = [1, 2, 3, 4, 6, 7]
 
