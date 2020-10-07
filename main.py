@@ -53,7 +53,7 @@ def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_pa
             correct += 1
     acc = (correct/len(X_test)) * 100
 
-    print(f'Accurate: {acc}%')
+    print('Accurate: {:.2f}%'.format(acc))
 
 def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list, labels: list, plot: bool):
     '''
@@ -94,7 +94,7 @@ def precision(M, labels):
     precision = [M[i][i]/row_sum[i] for i in range(len(row_sum))]
     
     for i in range(len(M[0])):
-        print("Precision of " + labels[i] + " is " + str(precision[i]*100)+"%") 
+        print(f"Recall of {labels[i]} is " + "{:.2f}%".format(precision[i]*100))
 
 def recall(M, labels):
     '''
@@ -103,7 +103,7 @@ def recall(M, labels):
     precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
     
     for i in range(len(M[0])):
-        print("Recall of " + labels[i] + " is " + str(precision[i]*100)+"%") 
+        print(f"Recall of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
 
 if __name__ == '__main__':
 
