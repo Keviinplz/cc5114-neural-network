@@ -40,7 +40,7 @@ class Dataset():
 
   def getData(self):
     data = self.extractInfoFromFile(self.filepath, self.regex, self.group)
-    random.shuffle(data)
+    #random.shuffle(data)
     X = []
     Y = []
     for x, y in data:

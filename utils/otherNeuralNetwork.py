@@ -3,15 +3,15 @@ from sklearn.metrics import mean_squared_error
 
 class OtherNeuralNetwork: 
 
-    def __init__(self, X, Y, n_x, n_h, n_y, number_of_iterations, learning_rate):
-        self.X = X
-        self.Y = Y
+    def __init__(self, n_x, n_h, n_y, number_of_iterations, learning_rate):
+        # self.X = X
+        # self.Y = Y
         self.n_x = n_x
         self.n_h = n_h
         self.n_y = n_y
         self.number_of_iterations = number_of_iterations
         self.learning_rate = learning_rate
-        self.m = X.shape[1]
+    
 
     @staticmethod
     def sigmoid(z):
@@ -59,11 +59,13 @@ class OtherNeuralNetwork:
     def calculate_cost(self, A2, Y):
         # m is the number of examples
         cost = mean_squared_error(A2, Y)
-        #cost = np.sum((0.5 * (A2 - Y) ** 2).mean(axis=1))/self.m
+        #cost = np.sum((0.5 * (A2 - Y) ** 2).mean(axis=1))/ m
         return cost
 
     # Apply the backpropagation
     def backward_prop(self, X, Y, cache, parameters):
+        m = X.shape[1]
+
         A1 = cache["A1"]
         A2 = cache["A2"]
 
@@ -71,12 +73,12 @@ class OtherNeuralNetwork:
 
         # Compute the difference between the predicted value and the real values
         dZ2 = A2 - Y
-        dW2 = np.dot(dZ2, A1.T)/self.m
-        db2 = np.sum(dZ2, axis=1, keepdims=True)/self.m
+        dW2 = np.dot(dZ2, A1.T)/ m
+        db2 = np.sum(dZ2, axis=1, keepdims=True)/ m
         # Because d/dx tanh(x) = 1 - tanh^2(x)
         dZ1 = np.multiply(np.dot(W2.T, dZ2), 1-np.power(A1, 2))
-        dW1 = np.dot(dZ1, X.T)/self.m
-        db1 = np.sum(dZ1, axis=1, keepdims=True)/self.m
+        dW1 = np.dot(dZ1, X.T)/ m
+        db1 = np.sum(dZ1, axis=1, keepdims=True)/ m
 
         grads = {
             "dW1": dW1,
@@ -119,12 +121,12 @@ class OtherNeuralNetwork:
     # n_x: number of inputs (this value impacts how X is shaped)
     # n_h: number of neurons in the hidden layer
     # n_y: number of neurons in the output layer (this value impacts how Y is shaped)
-    def model(self):
+    def model(self, X, Y):
         parameters = self.initialize_parameters(self.n_x, self.n_h, self.n_y)
         for i in range(0, self.number_of_iterations + 1):
-            a2, cache = self.forward_prop(self.X, parameters)
-            cost = self.calculate_cost(a2, self.Y)
-            grads = self.backward_prop(self.X, self.Y, cache, parameters)
+            a2, cache = self.forward_prop(X, parameters)
+            cost = self.calculate_cost(a2, Y)
+            grads = self.backward_prop(X, Y, cache, parameters)
             parameters = self.update_parameters(parameters, grads, self.learning_rate)
             if(i%100 == 0):
                 print('Cost after iteration# {:d}: {:f}'.format(i, cost))
