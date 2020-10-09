@@ -67,7 +67,7 @@ def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_
         Y_pred.append(y_pred)
    
     M = confusion_matrix(Y_test, Y_pred)
-    
+    row_sum = [sum(row[i] for i in range(len(M[0]))) for row in M]
     if plot:
 
         fig, ax = plt.subplots()
@@ -81,8 +81,8 @@ def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_
         ax.set_ylabel('True Label')
         for i in range(len(labels)):
             for j in range(len(labels)):
-                c = M[j,i]
-                ax.text(i, j, str(c), va='center', ha='center')
+                c = M[j,i]/row_sum[i]
+                ax.text(i, j, r'{:.2f}'.format(c), va='center', ha='center')
         plt.show()
     return M
 
@@ -95,7 +95,7 @@ def precision(M, labels):
     
     for i in range(len(M[0])):
         print(f"Recall of {labels[i]} is " + "{:.2f}%".format(precision[i]*100))
-
+    
 def recall(M, labels):
     '''
     This function takes the confusion matrix and prints the recall values
