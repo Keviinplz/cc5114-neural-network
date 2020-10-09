@@ -14,6 +14,10 @@ from sklearn.metrics import confusion_matrix
 # outputData: list Data output
 # factor: float between 0 and 1, to separate data
 def createTestAndTrainingDataset(inputData: list, outputData: list, factor: float) -> list:
+    '''
+    This function receives the datasets, both the input and output, and a factor which tells 
+    how the data will be splitted for the trainning. Returns the training set and test set.
+    '''
     training_len = int(len(inputData)*factor)
     test_len = -int(len(inputData)*(1-factor))
     
@@ -25,19 +29,27 @@ def createTestAndTrainingDataset(inputData: list, outputData: list, factor: floa
 
     return X_training, Y_training, X_test, Y_test
 
-def createNeuralNetwork(n_x: int, n_h: int, n_y: int, epoch: int, learning_rate: float):
+def createNeuralNetwork(n_x: int, n_h: int, n_y: int, epoch: int, learning_rate: float)->OtherNeuralNetwork:
+    '''
+    This function creates and returns a neural network with the given parameters
+    '''
     return OtherNeuralNetwork(n_x, n_h, n_y, epoch, learning_rate)
 
-def train(X_training, Y_training, nn):
-
-    #nn = OtherNeuralNetwork(X_training.T, Y_training.T, n_x, n_h, n_y, epoch, learning_rate)
+def train(X_training, Y_training, nn)->list:
+    '''
+    This function call receives the training sets and call to the model function of the given 
+    neural network. Also returns the trained parameters.
+    '''
     trained_params = nn.model(X_training.T, Y_training.T)
     return trained_params
     
   
  
 def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list) -> None:
-    
+    '''
+    This functions receives a neural network and his params to evaluate the accurate of the model 
+    regarding the given data set. This function prints the accurate.
+    '''
     correct = 0
     for i in range(len(X_test)):
         randomValue = randint(0, (len(X_test) - 1))
@@ -57,8 +69,8 @@ def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_pa
 
 def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list, labels: list, plot: bool):
     '''
-    This function receives the test values to contruct the confusion matrix.
-    Returns the above mentioned matrix (M) and if plot = True this function plot the matrix
+    This function receives the test values to contruct the confusion matrix using the confusion_matrix method of 
+    sklearn.metrics. Returns the above mentioned matrix (M) and if plot = True this function plot the matrix.
     '''
     Y_pred = []
     for i in range(len(X_test)):
@@ -86,24 +98,25 @@ def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_
         plt.show()
     return M
 
+def recall(M, labels):
+    '''
+    This function takes the confusion matrix and prints the recall values.
+    Precision = sum of 
+    '''
+    row_sum = [sum(row[i] for i in range(len(M[0]))) for row in M]
+    recall= [M[i][i]/row_sum[i] for i in range(len(row_sum))]
+    
+    for i in range(len(M[0])):
+        print(f"Recall of {labels[i]} is " + "{:.2f}%".format(recall[i]*100))
+    
 def precision(M, labels):
     '''
     This function takes the confusion matrix and prints the precision values
     '''
-    row_sum = [sum(row[i] for i in range(len(M[0]))) for row in M]
-    precision = [M[i][i]/row_sum[i] for i in range(len(row_sum))]
-    
-    for i in range(len(M[0])):
-        print(f"Recall of {labels[i]} is " + "{:.2f}%".format(precision[i]*100))
-    
-def recall(M, labels):
-    '''
-    This function takes the confusion matrix and prints the recall values
-    '''
     precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
     
     for i in range(len(M[0])):
-        print(f"Recall of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
+        print(f"Presicion of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
 
 if __name__ == '__main__':
 
