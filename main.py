@@ -118,9 +118,32 @@ def precision(M, labels):
     for i in range(len(M[0])):
         print(f"Presicion of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
 
+def normalize(X: list, norm_range: list):
+
+    '''
+    Normalize the given matrix to the given range.
+    The function to normalize is:
+        f(x) = (x - min)(upper-lower)/(max-min) + lower
+    Where:
+        x: the variable to normalize
+        min: the min of the dataset
+        max: the max of the dataset
+        lower: the lower bound of the given range
+        upper: the upper bound of the given range
+    '''
+    
+    m = np.array([[min(X[j]), max(X[j])] for j in range(len(X[0]))]).T.tolist()
+    print(m)
+    # anonymous function f normalize a single x
+    f = lambda x, min, max, lower, upper: (x-min)*(upper-lower)/(max-min) + lower
+    
+    for j in range(len(X[0][:])):
+        for i in range(len(X)):
+            X[i,j] = f(X[i][j], m[0][j], m[1][j], norm_range[0], norm_range[1])
+    return X
 if __name__ == '__main__':
 
-    FILEPATH = 'dataset/stars01.csv'
+    FILEPATH = 'dataset/stars02.csv'
     REGEX = r'^(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)([\w/.: \-\+\(\)]+,)(\d+\.\d+,|-\d+\.\d+,)([01])$'
     GROUP = [1, 2, 3, 4, 6, 7]
 
@@ -128,6 +151,8 @@ if __name__ == '__main__':
 
     X, Y = ds.getData()
 
+    # X = normalize(X, [-1,1])
+  
     # X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
     # train(X_train, Y_train, X_test, Y_test, 50, 1000, 0.01)
 
@@ -136,13 +161,13 @@ if __name__ == '__main__':
     n_y = len(Y[1])
     nn =  createNeuralNetwork(n_x, 50, n_y, 1000, 0.01)
     
-
+    # Dividing and trainning data set
     X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
     trained_params = train(X_train, Y_train, nn)
     accurateModel(X_test, Y_test, nn, trained_params)
 
     #K-fold training method
-    # kf = KFold(n_splits=5, shuffle=True, random_state = 123)
+    # kf = KFold(n_splits=3, shuffle=True, random_state = 123)
     # for train_index, test_index in kf.split(X):
     #     print("TRAIN:", train_index.shape, "TEST:", test_index.shape)
     #     X_train, X_test = X[train_index], X[test_index]
@@ -153,7 +178,7 @@ if __name__ == '__main__':
     
     #Confusion Matrix 
     labels = ["Dwarfs", "Giant"]
-    M = confusionMatrix(X_test, Y_test, nn, trained_params, labels, plot = True)
+    M = confusionMatrix(X_test, Y_test, nn, trained_params, labels, plot = False)
     
     #Precision and Recall
     precision(M, labels)

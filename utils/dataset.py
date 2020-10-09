@@ -18,7 +18,7 @@ class Dataset():
 
   def extractInfoFromFile(self, filepath: str, regex: str, group: list) -> list:
     """
-    Extract info from File use Regular Expresion
+    Extract info from File using Regular Expresion
     """
     inputsList = []
     outputsList = []
@@ -39,8 +39,11 @@ class Dataset():
     return data # The data has the form: [input, output]
 
   def getData(self):
+    '''
+    Returns the data separated in input and output set, as numpy array
+    '''
     data = self.extractInfoFromFile(self.filepath, self.regex, self.group)
-    #random.shuffle(data)
+    random.shuffle(data)
     X = []
     Y = []
     for x, y in data:
