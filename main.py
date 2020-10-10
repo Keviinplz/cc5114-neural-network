@@ -91,10 +91,12 @@ def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_
         ax.set_yticklabels(labels)
         ax.set_xlabel('Predicted Label')
         ax.set_ylabel('True Label')
+        ax.set_title("Confusion matrix")
         for i in range(len(labels)):
             for j in range(len(labels)):
                 c = M[j,i]/row_sum[i]
                 ax.text(i, j, r'{:.2f}'.format(c), va='center', ha='center')
+        plt.savefig("Confusion_matrix_kfold.png")
         plt.show()
     return M
 
@@ -116,10 +118,9 @@ def precision(M, labels):
     precision = [M[i][i]/sum(row[i] for row in M) for i in range(len(M[0]))]
     
     for i in range(len(M[0])):
-        print(f"Presicion of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
+        print(f"Precision of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
 
 def normalize(X: list, norm_range: list):
-
     '''
     Normalize the given matrix to the given range.
     The function to normalize is:
@@ -152,33 +153,29 @@ if __name__ == '__main__':
     X, Y = ds.getData()
 
     # X = normalize(X, [-1,1])
-  
-    # X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
-    # train(X_train, Y_train, X_test, Y_test, 50, 1000, 0.01)
 
     # Creating a Neural Network
     n_x = len(X[0])
     n_y = len(Y[1])
-    nn =  createNeuralNetwork(n_x, 50, n_y, 1000, 0.01)
+    nn =  createNeuralNetwork(n_x, 50, n_y, 2000, 0.01)
     
     # Dividing and trainning data set
-    X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
-    trained_params = train(X_train, Y_train, nn)
-    accurateModel(X_test, Y_test, nn, trained_params)
+    # X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
+    # trained_params = train(X_train, Y_train, nn)
+    # accurateModel(X_test, Y_test, nn, trained_params)
 
     #K-fold training method
-    # kf = KFold(n_splits=3, shuffle=True, random_state = 123)
-    # for train_index, test_index in kf.split(X):
-    #     print("TRAIN:", train_index.shape, "TEST:", test_index.shape)
-    #     X_train, X_test = X[train_index], X[test_index]
-    #     Y_train, Y_test = Y[train_index], Y[test_index]
-
-    #     trained_params = train(X_train, Y_train, nn)
-    #     accurateModel(X_test, Y_test, nn, trained_params)
+    kf = KFold(n_splits=5, shuffle=True, random_state = 123)
+    for train_index, test_index in kf.split(X):
+        print("TRAIN:", train_index.shape, "TEST:", test_index.shape)
+        X_train, X_test = X[train_index], X[test_index]
+        Y_train, Y_test = Y[train_index], Y[test_index]
+        trained_params = train(X_train, Y_train, nn)
+        accurateModel(X_test, Y_test, nn, trained_params)
     
     #Confusion Matrix 
     labels = ["Dwarfs", "Giant"]
-    M = confusionMatrix(X_test, Y_test, nn, trained_params, labels, plot = False)
+    M = confusionMatrix(X_test, Y_test, nn, trained_params, labels, plot = True)
     
     #Precision and Recall
     precision(M, labels)

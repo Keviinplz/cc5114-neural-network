@@ -2,8 +2,20 @@ import numpy as np
 from sklearn.metrics import mean_squared_error 
 
 class OtherNeuralNetwork: 
+    """
+    Define a Neural Network class
+    """
 
     def __init__(self, n_x, n_h, n_y, number_of_iterations, learning_rate):
+        """Constructor 
+
+        Args:
+            n_x (int): number of neurons in the first layer (input)
+            n_h (int]): number of neurons in the hidden layer
+            n_y (type): number of neuron in the last layer (output)
+            number_of_iterations (int): times the neural network is trained
+            learning_rate (float): rate of learning
+        """
         # self.X = X
         # self.Y = Y
         self.n_x = n_x
@@ -15,10 +27,29 @@ class OtherNeuralNetwork:
 
     @staticmethod
     def sigmoid(z):
+        """ sigmoid activation function
+
+        Args:
+            z (float): XW + b
+
+        Returns:
+            float: sigmoid function
+        """
         return 1/(1 + np.exp(-z))
 
     # Produce a neural network randomly initialized
     def initialize_parameters(self, n_x, n_h, n_y):
+        """ 
+        Randomly intialize parameters of the neural network
+
+        Args:
+            n_x (int): number of neurons in the first layer (input)
+            n_h (int]): number of neurons in the hidden layer
+            n_y (type): number of neuron in the last layer (output)
+
+        Returns:
+            sets: created parameters 
+        """
         W1 = np.random.randn(n_h, n_x)
         b1 = np.zeros((n_h, 1))
         W2 = np.random.randn(n_y, n_h)
@@ -34,6 +65,16 @@ class OtherNeuralNetwork:
 
     # Evaluate the neural network
     def forward_prop(self, X, parameters):
+        """Forward propagation of the neural network
+
+        Args:
+            X (list): matrix of inputs
+            parameters (sets): set of parameters
+
+        Returns:
+            A2 (list): Activation value for second layer
+            cache(sets): includes Activation values of layer 1 and 2
+        """
         W1 = parameters["W1"]
         b1 = parameters["b1"]
         W2 = parameters["W2"]
@@ -54,9 +95,19 @@ class OtherNeuralNetwork:
         }
         return A2, cache
 
-    # Evaluate the error (i.e., cost) between the prediction made in A2 and the provided labels Y 
-    # We use the Mean Square Error cost function
+ 
     def calculate_cost(self, A2, Y):
+        """
+        Evaluate the error (i.e., cost) between the prediction made in A2 and the provided labels Y
+        We use the Mean Square Error cost function
+
+        Args:
+            A2 (list):  Activation value for first layer
+            Y (list): output label
+
+        Returns:
+            float: MSE
+        """
         # m is the number of examples
         cost = mean_squared_error(A2, Y)
         #cost = np.sum((0.5 * (A2 - Y) ** 2).mean(axis=1))/ m
@@ -64,6 +115,7 @@ class OtherNeuralNetwork:
 
     # Apply the backpropagation
     def backward_prop(self, X, Y, cache, parameters):
+
         m = X.shape[1]
 
         A1 = cache["A1"]
