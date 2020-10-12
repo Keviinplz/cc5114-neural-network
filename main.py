@@ -2,12 +2,13 @@ from random import randint, shuffle
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-from utils.dataset import Dataset
-from utils.neuralnetwork import NeuralNetwork
-from utils.otherNeuralNetwork import OtherNeuralNetwork
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
+
+from utils.dataset import Dataset
+from utils.neuralNetwork import NeuralNetwork
+
+
 
 # Create a Training and Test data by factor
 # inputData: list Data input
@@ -33,7 +34,7 @@ def createNeuralNetwork(n_x: int, n_h: int, n_y: int, epoch: int, learning_rate:
     '''
     This function creates and returns a neural network with the given parameters
     '''
-    return OtherNeuralNetwork(n_x, n_h, n_y, epoch, learning_rate)
+    return NeuralNetwork(n_x, n_h, n_y, epoch, learning_rate)
 
 def train(X_training, Y_training, nn)->list:
     '''
@@ -120,28 +121,7 @@ def precision(M, labels):
     for i in range(len(M[0])):
         print(f"Precision of {labels[i]} is " + "{:.2f}%".format(precision[i]*100)) 
 
-def normalize(X: list, norm_range: list):
-    '''
-    Normalize the given matrix to the given range.
-    The function to normalize is:
-        f(x) = (x - min)(upper-lower)/(max-min) + lower
-    Where:
-        x: the variable to normalize
-        min: the min of the dataset
-        max: the max of the dataset
-        lower: the lower bound of the given range
-        upper: the upper bound of the given range
-    '''
-    
-    m = np.array([[min(X[j]), max(X[j])] for j in range(len(X[0]))]).T.tolist()
-    print(m)
-    # anonymous function f normalize a single x
-    f = lambda x, min, max, lower, upper: (x-min)*(upper-lower)/(max-min) + lower
-    
-    for j in range(len(X[0][:])):
-        for i in range(len(X)):
-            X[i,j] = f(X[i][j], m[0][j], m[1][j], norm_range[0], norm_range[1])
-    return X
+
 if __name__ == '__main__':
 
     FILEPATH = 'dataset/stars02.csv'
@@ -152,7 +132,7 @@ if __name__ == '__main__':
 
     X, Y = ds.getData()
 
-    # X = normalize(X, [-1,1])
+    
 
     # Creating a Neural Network
     n_x = len(X[0])
