@@ -30,7 +30,7 @@ def createTestAndTrainingDataset(inputData: list, outputData: list, factor: floa
 
     return X_training, Y_training, X_test, Y_test
 
-def createNeuralNetwork(n_x: int, n_h: int, n_y: int, epoch: int, learning_rate: float)->OtherNeuralNetwork:
+def createNeuralNetwork(n_x: int, n_h: int, n_y: int, epoch: int, learning_rate: float)->NeuralNetwork:
     '''
     This function creates and returns a neural network with the given parameters
     '''
@@ -46,7 +46,7 @@ def train(X_training, Y_training, nn)->list:
     
   
  
-def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list) -> None:
+def accurateModel(X_test: list, Y_test: list, nn: NeuralNetwork, trained_params: list) -> None:
     '''
     This functions receives a neural network and his params to evaluate the accurate of the model 
     regarding the given data set. This function prints the accurate.
@@ -68,7 +68,7 @@ def accurateModel(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_pa
 
     print('Accurate: {:.2f}%'.format(acc))
 
-def confusionMatrix(X_test: list, Y_test: list, nn: OtherNeuralNetwork, trained_params: list, labels: list, plot: bool):
+def confusionMatrix(X_test: list, Y_test: list, nn: NeuralNetwork, trained_params: list, labels: list, plot: bool):
     '''
     This function receives the test values to contruct the confusion matrix using the confusion_matrix method of 
     sklearn.metrics. Returns the above mentioned matrix (M) and if plot = True this function plot the matrix.
@@ -127,19 +127,17 @@ if __name__ == '__main__':
     FILEPATH = 'dataset/stars02.csv'
     REGEX = r'^(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)(\d+\.\d+,|-\d+\.\d+,)([\w/.: \-\+\(\)]+,)(\d+\.\d+,|-\d+\.\d+,)([01])$'
     GROUP = [1, 2, 3, 4, 6, 7]
-
     ds = Dataset(FILEPATH, REGEX, GROUP)
-
     X, Y = ds.getData()
-
-    
 
     # Creating a Neural Network
     n_x = len(X[0])
     n_y = len(Y[1])
     nn =  createNeuralNetwork(n_x, 50, n_y, 2000, 0.01)
     
+    
     # Dividing and trainning data set
+
     # X_train, Y_train, X_test, Y_test = createTestAndTrainingDataset(X, Y, 0.8)
     # trained_params = train(X_train, Y_train, nn)
     # accurateModel(X_test, Y_test, nn, trained_params)
